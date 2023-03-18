@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
+import 'package:share/pages/getstarted.dart';
+import 'package:firebase_core/firebase_core.dart';
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+ 
 }
 
 class MyApp extends StatelessWidget {
@@ -12,8 +16,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner:false,
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: "SpaceGroteskt"),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Getstarted(),
     );
   }
 }

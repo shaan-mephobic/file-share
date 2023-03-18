@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "825136703376",
+    "project_id": "filesharing-30dc0",
+    "storage_bucket": "filesharing-30dc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825136703376:android:56f30b98922de5fe68b515",
+        "android_client_info": {
+          "package_name": "com.example.share"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825136703376-c4h7n9824omhmjuhuknk3042pve2oorb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.share",
+            "certificate_hash": "3edd72ecf216a0a55d1187837cbd5e5b54c700ff"
+          }
+        },
+        {
+          "client_id": "825136703376-i0oghv9t12p6klkv5j5ke9aao3ppo11o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSkQ-z0C6RnpFAbTerYpFYxK_UpbMwLzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825136703376-i0oghv9t12p6klkv5j5ke9aao3ppo11o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
