@@ -14,128 +14,77 @@ class Otp extends StatefulWidget {
 class _OtpState extends State<Otp> {
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _otpController = TextEditingController();
-    final TextEditingController _phoneNumberController =
-        TextEditingController();
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    bool _validatePhoneNumber() {
-      String phoneNumber = '+91${_phoneNumberController.text.trim()}';
-
-      if (phoneNumber.isEmpty || phoneNumber.length != 13) {
-        Fluttertoast.showToast(
-          msg: 'Please enter a valid phone number.',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
-        return false;
-      }
-
-      return true;
-    }
-
-    String _verificationId = '';
-
     double screenWidth = MediaQuery.of(context).size.width;
     double widgetWidth = screenWidth * 0.8;
     double widgetWidth2 = screenWidth * 0.3;
- // define a state variable to store verification ID
+    TextEditingController phoneController = TextEditingController();
+    TextEditingController otpController = TextEditingController();
 
-    Future<void> _submitPhoneNumber() async {
-      String phoneNumber = '+91${_phoneNumberController.text.trim()}';
+    FirebaseAuth auth = FirebaseAuth.instance;
 
-      if (phoneNumber.length != 13) {
-        Fluttertoast.showToast(
-          msg: 'Please enter a valid phone number.',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
-        return;
-      }
-
-      // Verify the reCAPTCHA first
-      final PhoneVerificationCompleted verificationCompleted =
-          (PhoneAuthCredential phoneAuthCredential) async {
-        await _auth.signInWithCredential(phoneAuthCredential);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Otp(),
-          ),
-        );
-      };
-
-      final PhoneVerificationFailed verificationFailed =
-          (FirebaseAuthException authException) {
-        Fluttertoast.showToast(
-          msg: 'Failed to verify phone number. Please try again.',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
-      };
-
-      final PhoneCodeSent codeSent =
-          (String verificationId, int? resendToken) async {
-        setState(() {
-          _verificationId = verificationId; // store verification ID
-        });
-
-        // Navigate to OTP screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Otp(),
-          ),
-        );
-      };
-
-      final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-          (String verificationId) {
-        setState(() {
-          _verificationId = verificationId; // store verification ID
-        });
-      };
-
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-        timeout: Duration(seconds: 60),
+    User? user;
+    String verificationID = "";
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    void loginWithPhone() async {
+      auth.verifyPhoneNumber(
+        phoneNumber: "+91" + phoneController.text,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await auth.signInWithCredential(credential).then((value) {
+            print("You are logged in successfully");
+          });
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print(e.message);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          verificationID = verificationId;
+          setState(() {});
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
       );
     }
 
-    Future<void> _submitOtp() async {
-      String otp = _otpController.text.trim();
-
-      if (otp.length != 6) {
-        Fluttertoast.showToast(
-          msg: 'Please enter a valid OTP.',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
-        return;
-      }
-
+    void verifyOTP() async {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, // use stored verification ID
-        smsCode: otp,
-      );
+          verificationId: verificationID, smsCode: otpController.text);
 
-      try {
-        await _auth.signInWithCredential(credential);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Home()),
-        );
-      } on FirebaseAuthException catch (e) {
-        print(e);
-        Fluttertoast.showToast(
-          msg: 'Incorrect OTP. Please try again.',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
-      }
+      await auth.signInWithCredential(credential).then(
+        (value) {
+          setState(() {
+            user = FirebaseAuth.instance.currentUser;
+          });
+        },
+      ).whenComplete(
+        () {
+          if (user != null) {
+            Fluttertoast.showToast(
+              msg: "You are logged in successfully",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Home(),
+              ),
+            );
+          } else {
+            Fluttertoast.showToast(
+              msg: "your login is failed",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
+        },
+      );
     }
 
     return Scaffold(
@@ -160,44 +109,24 @@ class _OtpState extends State<Otp> {
             ),
           ),
           SizedBox(),
-          Stack(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 30,
-                  right: 30,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5), //shadow color
-                      spreadRadius: 5, // spread radius
-                      blurRadius: 7, // shadow blur radius
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: _otpController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Otp',
-                    hintStyle: TextStyle(color: Colors.black),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  ),
-                ),
-              ),
-            ],
+          TextField(
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Otp',
+              hintStyle: TextStyle(color: Colors.black),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
           ),
           Center(
               child: SizedBox(
                   width: widgetWidth2,
                   child: ElevatedButton(
-                    onPressed: _submitOtp,
+                    onPressed: () {
+                      verifyOTP();
+                    },
                     child: Text(
                       "Confirm",
                       style:
