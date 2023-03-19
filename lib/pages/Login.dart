@@ -1,5 +1,5 @@
 import 'package:share/pages/home.dart';
-import 'package:share/pages/otp.dart';
+import 'package:share/pages/Otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -196,7 +196,9 @@ class _LoginState extends State<Login> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Otp(),
+            builder: (context) => Otp(
+              verID: verificationID,
+            ),
           ),
         );
       },
