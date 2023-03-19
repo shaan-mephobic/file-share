@@ -15,24 +15,6 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _otpController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _validatePhoneNumber() {
-    String phoneNumber = '+91${_phoneNumberController.text.trim()}';
-
-    if (phoneNumber.isEmpty || phoneNumber.length != 13) {
-      Fluttertoast.showToast(
-        msg: 'Please enter a valid phone number.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-      );
-      return false;
-    }
-
-    return true;
-  }
-
   late String _verificationId;
   Future<UserCredential?> signInWithGoogle() async {
     // Create an instance of the firebase auth and google signin
@@ -55,94 +37,14 @@ class _LoginState extends State<Login> {
     return null;
   }
 
-  Future<void> _submitPhoneNumber() async {
-    String phoneNumber = '+91${_phoneNumberController.text.trim()}';
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
 
-    if (phoneNumber.length != 13) {
-      Fluttertoast.showToast(
-        msg: 'Please enter a valid phone number.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-      );
-      return;
-    }
+  FirebaseAuth auth = FirebaseAuth.instance;
 
-    // Verify the reCAPTCHA first
-    final PhoneVerificationCompleted verificationCompleted =
-        (PhoneAuthCredential phoneAuthCredential) async {
-      await _auth.signInWithCredential(phoneAuthCredential);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Otp(),
-        ),
-      );
-    };
-
-    final PhoneVerificationFailed verificationFailed =
-        (FirebaseAuthException authException) {
-      Fluttertoast.showToast(
-        msg: 'Failed to verify phone number. Please try again.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-      );
-    };
-
-    final PhoneCodeSent codeSent =
-        (String verificationId, int? resendToken) async {
-      setState(() {
-        _verificationId = verificationId; // store verification ID
-      });
-
-      // Navigate to OTP screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Otp(),
-        ),
-      );
-    };
-
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
-      setState(() {
-        _verificationId = verificationId; // store verification ID
-      });
-    };
-
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
-      codeSent: codeSent,
-      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-      timeout: Duration(seconds: 60),
-    );
-  }
-
-  Future<void> _submitOtp() async {
-    String otp = _otpController.text;
-
-    if (otp.length != 6) {
-      Fluttertoast.showToast(
-        msg: 'Please enter a valid OTP.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-      );
-      return;
-    }
-
-    var credential = PhoneAuthProvider.credential(
-      verificationId: _verificationId, // use stored verification ID
-      smsCode: otp,
-    );
-
-    await _auth.signInWithCredential(credential);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Home()),
-    );
-  }
+  User? user;
+  String verificationID = "";
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +98,7 @@ class _LoginState extends State<Login> {
                   ],
                 ),
                 child: TextField(
-                  controller: _phoneNumberController,
+                  controller: phoneController,
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -213,7 +115,9 @@ class _LoginState extends State<Login> {
               child: SizedBox(
                   width: widgetWidth2,
                   child: ElevatedButton(
-                    onPressed: _submitPhoneNumber,
+                    onPressed: () {
+                      loginWithPhone();
+                    },
                     style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.black,
@@ -272,6 +176,31 @@ class _LoginState extends State<Login> {
                   ))),
         ],
       ),
+    );
+  }
+
+  void loginWithPhone() async {
+    auth.verifyPhoneNumber(
+      phoneNumber: "+91" + phoneController.text,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await auth.signInWithCredential(credential).then((value) {
+          print("You are logged in successfully");
+        });
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print(e.message);
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        verificationID = verificationId;
+        setState(() {});
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Otp(),
+          ),
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
     );
   }
 }
