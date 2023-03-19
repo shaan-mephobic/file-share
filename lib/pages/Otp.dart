@@ -1,5 +1,4 @@
-import 'package:share/pages/Home.dart';
-import 'package:share/pages/Otp.dart';
+import 'package:share/pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';

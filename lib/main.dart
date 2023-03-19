@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:share/pages/getstarted.dart';
+import "pages/start.dart";
 import 'package:firebase_core/firebase_core.dart';
-void main() async{
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
- 
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner:false,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: "SpaceGroteskt"),
-      home: Getstarted(),
+      home: const Getstarted(),
     );
   }
 }

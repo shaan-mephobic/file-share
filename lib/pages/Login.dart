@@ -1,5 +1,5 @@
-import 'package:share/pages/Home.dart';
-import 'package:share/pages/Otp.dart';
+import 'package:share/pages/home.dart';
+import 'package:share/pages/otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -149,28 +149,33 @@ class _LoginState extends State<Login> {
     double screenWidth = MediaQuery.of(context).size.width;
     double widgetWidth = screenWidth * 0.8;
     double widgetWidth2 = screenWidth * 0.3;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        foregroundColor: Colors.black,
+        toolbarHeight: screenHeight / 7,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          "File Sharing",
+          style: TextStyle(
+              fontSize: 33, fontWeight: FontWeight.w600, color: Colors.black),
+        ),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 30, top: 50),
-            child: Text(
-              "File Sharing",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
-            ),
-          ),
-          Padding(
+          const Padding(
             padding: const EdgeInsets.only(left: 30),
             child: Text(
               "Beginning Of The" + "\nNew Horizon",
               style: TextStyle(
-                  fontSize: 30, fontWeight: FontWeight.w500, height: 1.5),
+                  fontSize: 30, fontWeight: FontWeight.w600, height: 1.5),
             ),
           ),
-          SizedBox(),
+          const SizedBox(),
           Stack(
             children: [
               Container(
@@ -184,16 +189,16 @@ class _LoginState extends State<Login> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5), //shadow color
-                      spreadRadius: 5, // spread radius
-                      blurRadius: 7, // shadow blur radius
-                      offset: const Offset(0, 3), // changes position of shadow
+                      spreadRadius: 1, // spread radius
+                      blurRadius: 5, // shadow blur radius
+                      offset: const Offset(0, 2), // changes position of shadow
                     ),
                   ],
                 ),
                 child: TextField(
                   controller: _phoneNumberController,
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Phone Number',
                     hintStyle: TextStyle(color: Colors.black),
@@ -209,6 +214,11 @@ class _LoginState extends State<Login> {
                   width: widgetWidth2,
                   child: ElevatedButton(
                     onPressed: _submitPhoneNumber,
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 15)),
                     //() {
 
                     //   Navigator.push(
@@ -216,16 +226,11 @@ class _LoginState extends State<Login> {
                     //     MaterialPageRoute(builder: (context) => Otp()),
                     //   );
                     // },
-                    child: Text(
+                    child: const Text(
                       "Done",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.black,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
                   ))),
           Center(
               child: SizedBox(
@@ -237,33 +242,33 @@ class _LoginState extends State<Login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Home(),
+                            builder: (context) => const Home(),
                           ),
                         );
                       }
                     },
-                    child: Text.rich(
-                      TextSpan(
-                          text: "Login With ",
-                          style: TextStyle(
-                              fontSize: 23, fontWeight: FontWeight.w500),
-                          children: [
-                            WidgetSpan(
-                                child: Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 2, left: 5),
-                              child: Image.network(
-                                  'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
-                                  height: 25,
-                                  width: 25),
-                            )),
-                          ]),
-                    ),
                     style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.black,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+                        padding: const EdgeInsets.symmetric(vertical: 10)),
+                    child: Text.rich(
+                      TextSpan(
+                          text: "Login With ",
+                          style: const TextStyle(
+                              fontSize: 21, fontWeight: FontWeight.w500),
+                          children: [
+                            WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 2, left: 1),
+                                  child: Image.network(
+                                      'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                                      height: 32,
+                                      width: 32),
+                                )),
+                          ]),
+                    ),
                   ))),
         ],
       ),
