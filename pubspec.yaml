@@ -40,6 +40,7 @@ dependencies:
   google_sign_in: ^5.4.2
   firebase_auth: ^4.2.3
   fluttertoast: ^8.2.1
+  another_flushbar: ^1.12.29
  
  
 
