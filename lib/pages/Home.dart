@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   FTPConnect ftp =
-      FTPConnect('192.168.0.153', user: 'admin', pass: 'password', port: 2121);
+      FTPConnect('192.168.169.17', user: 'admin', pass: 'password', port: 2121);
   bool isLoading = true;
 
   @override
