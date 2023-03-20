@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Share',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: "SpaceGroteskt"),
+      theme: ThemeData(fontFamily: "SpaceGroteskt"),
       home: const Getstarted(),
     );
   }

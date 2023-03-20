@@ -40,9 +40,11 @@ dependencies:
   google_sign_in: ^6.0.2
   firebase_auth: ^4.2.3
   fluttertoast: ^8.2.1
+  another_flushbar: ^1.12.29
   file_picker: ^5.2.6
   ftpconnect: 
   sleek_circular_slider: ^2.0.1
+
  
  
 

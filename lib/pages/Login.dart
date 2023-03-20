@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:share/pages/home.dart';
 import 'package:share/pages/Otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +20,11 @@ class _LoginState extends State<Login> {
   Future<UserCredential?> signInWithGoogle() async {
     // Create an instance of the firebase auth and google signin
     FirebaseAuth auth = FirebaseAuth.instance;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
     final GoogleSignIn googleSignIn = GoogleSignIn();
     //Triger the authentication flow
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -34,6 +40,7 @@ class _LoginState extends State<Login> {
     //Sign in the user with the credentials
     final UserCredential userCredential =
         await auth.signInWithCredential(credential);
+    Navigator.of(context).pop();
     return null;
   }
 
@@ -51,6 +58,7 @@ class _LoginState extends State<Login> {
     double screenWidth = MediaQuery.of(context).size.width;
     double widgetWidth = screenWidth * 0.8;
     double widgetWidth2 = screenWidth * 0.3;
+    double widgetWidth3 = screenWidth * 0.5;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -80,32 +88,27 @@ class _LoginState extends State<Login> {
           const SizedBox(),
           Stack(
             children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 30,
-                  right: 30,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5), //shadow color
-                      spreadRadius: 1, // spread radius
-                      blurRadius: 5, // shadow blur radius
-                      offset: const Offset(0, 2), // changes position of shadow
+              Center(
+                child: SizedBox(
+                  width: widgetWidth,
+                  child: TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black, // set border color here
+                        ),
+                      ),
+                      hintText: 'Enter Your Phone Number',
+                      labelText: 'Phone Number',
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500, color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.black, fontSize: 13),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     ),
-                  ],
-                ),
-                child: TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Phone Number',
-                    hintStyle: TextStyle(color: Colors.black),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   ),
                 ),
               ),
@@ -179,16 +182,54 @@ class _LoginState extends State<Login> {
     );
   }
 
-  void loginWithPhone() async {
+//   void loginWithPhone() async {
+//     auth.verifyPhoneNumber(
+//       phoneNumber: "+91" + phoneController.text,
+//       verificationCompleted: (PhoneAuthCredential credential) async {
+//         await auth.signInWithCredential(credential).then((value) {
+//           print("You are logged in successfully");
+//         });
+//       },
+//       verificationFailed: (FirebaseAuthException e) {
+//         print(e.message);
+//       },
+//       codeSent: (String verificationId, int? resendToken) {
+//         verificationID = verificationId;
+//         setState(() {});
+//         Navigator.pushReplacement(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => Otp(
+//               verID: verificationID,
+//             ),
+//           ),
+//         );
+//       },
+//       codeAutoRetrievalTimeout: (String verificationId) {},
+//     );
+//   }
+// }
+  Future loginWithPhone() async {
+    String phone = phoneController.text.trim();
+    if (phone.isEmpty || phone.length != 10) {
+      showToast("Please Enter a Valid Phone Number");
+      return;
+    }
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
     auth.verifyPhoneNumber(
-      phoneNumber: "+91" + phoneController.text,
+      phoneNumber: "+91" + phone,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await auth.signInWithCredential(credential).then((value) {
           print("You are logged in successfully");
         });
       },
       verificationFailed: (FirebaseAuthException e) {
-        print(e.message);
+        showToast(e.message ?? "Verification failed");
       },
       codeSent: (String verificationId, int? resendToken) {
         verificationID = verificationId;
@@ -201,8 +242,17 @@ class _LoginState extends State<Login> {
             ),
           ),
         );
+        Navigator.of(context).pop();
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
+  }
+
+  void showToast(String message) {
+    Flushbar(
+      message: message,
+      duration: Duration(seconds: 3),
+      messageColor: Colors.white,
+    ).show(context);
   }
 }
