@@ -40,6 +40,10 @@ class _LoginState extends State<Login> {
     //Sign in the user with the credentials
     final UserCredential userCredential =
         await auth.signInWithCredential(credential);
+    print("details");
+    print(userCredential.additionalUserInfo!.profile);
+
+    print("aabove");
     Navigator.of(context).pop();
     return null;
   }
@@ -146,7 +150,7 @@ class _LoginState extends State<Login> {
                     onPressed: () async {
                       await signInWithGoogle();
                       if (mounted) {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const Home(),
@@ -216,11 +220,11 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator());
-        });
+    // showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return Center(child: CircularProgressIndicator());
+    //     });
     auth.verifyPhoneNumber(
       phoneNumber: "+91" + phone,
       verificationCompleted: (PhoneAuthCredential credential) async {
@@ -242,7 +246,6 @@ class _LoginState extends State<Login> {
             ),
           ),
         );
-        Navigator.of(context).pop();
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );

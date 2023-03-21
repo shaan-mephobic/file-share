@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
+import 'package:share/pages/download.dart';
 import 'package:share/pages/upload.dart';
 
 class Home extends StatefulWidget {
@@ -11,7 +13,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   FTPConnect ftp =
-      FTPConnect('192.168.169.17', user: 'admin', pass: 'password', port: 2121);
+      FTPConnect('192.168.0.154', user: 'admin', pass: 'password', port: 2121);
   bool isLoading = true;
 
   @override
@@ -22,9 +24,7 @@ class _HomeState extends State<Home> {
 
   Future<void> initializeFTP() async {
     await ftp.connect();
-    print("connected");
     await ftp.createFolderIfNotExist("Everything");
-    print(await ftp.listDirectoryContentOnlyNames());
     setState(() {
       isLoading = false;
     });
@@ -71,15 +71,168 @@ class _HomeState extends State<Home> {
               onRefresh: () async {
                 return initializeFTP();
               },
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: 200,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                      title: Text(
-                    "$index",
-                    style: const TextStyle(color: Colors.black),
-                  ));
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("files")
+                    // .limit(12)
+                    // .orderBy("Published Date", descending: true)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  //filter snapshots
+                  snapshot = snapshot;
+
+                  if (!snapshot.hasData) {
+                    return const Text("NO data");
+                  }
+                  return GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data?.docs.length,
+                    padding: EdgeInsets.only(bottom: screenHeight / 8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 3 / 4,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      // return ClipRRect(
+                      //   borderRadius: BorderRadius.circular(5),
+                      //   child: Stack(
+                      //     children: [
+                      //       SizedBox(
+                      //         height: 150,
+                      //         width: 150,
+                      //         child: Image.network(
+                      //           snapshot.data?.docs[index]["uploaderImage"] ??
+                      //               "",
+                      //           fit: BoxFit.cover,
+                      //           width: double.infinity,
+                      //           height: double.infinity,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // );
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => FileDownload(
+                                        fileDetails:
+                                            snapshot.data!.docs[index],
+                                      )));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 8.0, right: 8.0, top: 0, bottom: 20),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Hero(
+                                        tag: snapshot.data!.docs[index]
+                                            ["docReference"],
+                                        child: AspectRatio(
+                                          aspectRatio: 1,
+                                          // margin: EdgeInsets.all(50),
+                                          // color: Colors.grey[300],
+                                          // child: Center(
+                                          // child: SizedBox(
+                                          //   width: screenWidth / 9,
+                                          //   child: AspectRatio(
+                                          //     aspectRatio: 5 / 6,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                      color: Colors.black26,
+                                                      offset: Offset(0, 2),
+                                                      blurRadius: 6),
+                                                ],
+                                                borderRadius:
+                                                    BorderRadius.circular(12)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  //   ),
+                                  // ),
+                                  // ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: screenWidth / 75 + 8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: Text(
+                                          snapshot.data?.docs[index]
+                                              ["filename"],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 19),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 22,
+                                            height: 22,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 2,
+                                                    offset: Offset(0, 2))
+                                              ],
+                                              image: DecorationImage(
+                                                image: NetworkImage(
+                                                  snapshot.data?.docs[index]
+                                                      ["uploaderImage"],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 10.0),
+                                            child: Text(
+                                              snapshot.data?.docs[index]
+                                                  ["uploader"],
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 13),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]),
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
             )

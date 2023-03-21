@@ -29,6 +29,8 @@ class _OtpState extends State<Otp> {
         verificationId: widget.verID, smsCode: otpController.text);
     await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       user = value.user?.uid;
+      print(user);
+      print("aabove");
       Navigator.of(context).pop();
     });
   }
