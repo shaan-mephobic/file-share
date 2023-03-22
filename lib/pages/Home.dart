@@ -1,9 +1,12 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
 import 'package:share/constant/constants.dart';
 import 'package:share/pages/download.dart';
 import 'package:share/pages/upload.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -179,36 +182,66 @@ class _HomeState extends State<Home> {
                                             ["docReference"],
                                         child: AspectRatio(
                                           aspectRatio: 1,
-                                          // margin: EdgeInsets.all(50),
-                                          // color: Colors.grey[300],
-                                          // child: Center(
-                                          // child: SizedBox(
-                                          //   width: screenWidth / 9,
-                                          //   child: AspectRatio(
-                                          //     aspectRatio: 5 / 6,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                      color: Colors.black26,
-                                                      offset: Offset(0, 2),
-                                                      blurRadius: 6),
-                                                ],
-                                                borderRadius:
-                                                    BorderRadius.circular(12)),
-                                          ),
+                                          // child: Container(
+                                          //   decoration: BoxDecoration(
+                                          //       color: Colors.white,
+                                          //       boxShadow: const [
+                                          //         BoxShadow(
+                                          //             color: Colors.black26,
+                                          //             offset: Offset(0, 2),
+                                          //             blurRadius: 6),
+                                          //       ],
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(12)),
+                                          // ),
+                                          child: Stack(children: <Widget>[
+                                            //shadow
+                                            Transform.translate(
+                                              offset: const Offset(0, 2),
+                                              child: ImageFiltered(
+                                                imageFilter: ImageFilter.blur(
+                                                    sigmaY: 4, sigmaX: 4),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color: Colors.transparent,
+                                                      width: 0,
+                                                    ),
+                                                  ),
+                                                  child: ColorFiltered(
+                                                    colorFilter:
+                                                        ColorFilter.mode(
+                                                            Colors.black
+                                                                .withOpacity(
+                                                                    0.18),
+                                                            BlendMode.srcATop),
+                                                    child: SvgPicture.asset(
+                                                      "assets/files/file.svg",
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            // svg
+                                            SvgPicture.asset(
+                                              "assets/files/file.svg",
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ]),
                                         ),
                                       ),
                                     ),
                                   ),
-                                  //   ),
-                                  // ),
-                                  // ),
                                 ),
+                                //   ),
+                                // ),
+                                // ),/
+                                // ),
                                 Padding(
                                   padding: EdgeInsets.only(
-                                      left: screenWidth / 75 + 8),
+                                      left: screenWidth / 45 + 8),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,

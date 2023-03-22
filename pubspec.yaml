@@ -47,6 +47,7 @@ dependencies:
   cloud_firestore: ^4.4.5
   permission_handler:
   intl: 
+  flutter_svg: ^2.0.4
 
  
  

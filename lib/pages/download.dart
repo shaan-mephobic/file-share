@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ftpconnect/ftpConnect.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:share/constant/constants.dart';
 import 'package:share/logic/firebase_db.dart';
+import 'package:share/widgets/file_clip.dart';
 
 class FileDownload extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> fileDetails;
@@ -144,32 +147,57 @@ class _FileDownloadState extends State<FileDownload> {
         ),
       ),
       body: ListView.builder(
+        physics: const BouncingScrollPhysics(),
         itemCount: widget.fileDetails["history"].length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Column(
               children: [
                 Hero(
-                  tag: widget.fileDetails["docReference"],
-                  child: Center(
+                    tag: widget.fileDetails["docReference"],
+                    child: Center(
                       child: SizedBox(
-                    width: screenWidth / 2,
-                    child: AspectRatio(
-                      aspectRatio: 1 / 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(0, 2),
-                                  blurRadius: 6),
-                            ],
-                            borderRadius: BorderRadius.circular(12)),
+                        width: screenWidth / 2,
+                        child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              //shadow
+                              Transform.translate(
+                                offset: const Offset(0, 2),
+                                child: ImageFiltered(
+                                  imageFilter:
+                                      ImageFilter.blur(sigmaY: 4, sigmaX: 4),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.transparent,
+                                        width: 0,
+                                      ),
+                                    ),
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.black.withOpacity(0.18),
+                                          BlendMode.srcATop),
+                                      child: SvgPicture.asset(
+                                        "assets/files/file.svg",
+                                        fit: BoxFit.contain,
+                                        width: screenWidth / 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // svg
+                              SvgPicture.asset(
+                                "assets/files/file.svg",
+                                fit: BoxFit.contain,
+                                width: screenWidth / 2,
+                              ),
+                            ]),
                       ),
-                    ),
-                  )),
-                ),
+                    )),
+                // ),
                 Padding(
                   padding: const EdgeInsets.only(top: 30.0),
                   child: Row(
