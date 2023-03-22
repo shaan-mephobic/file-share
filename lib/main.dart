@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:share/logic/hive_db.dart';
+import 'package:share/pages/home.dart';
 import "pages/start.dart";
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hive/hive.dart';
@@ -6,13 +8,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
-  await Hive.initFlutter();
-  final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  print(appDocumentDirectory.path);
-  Hive.init(appDocumentDirectory.path);
-  await Hive.openBox('profileBox');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Hive.initFlutter();
+  box = await Hive.openBox('profileBox');
   runApp(const MyApp());
 }
 
@@ -43,7 +42,7 @@ class MyApp extends StatelessWidget {
           thumbColor: MaterialStateProperty.all(Colors.white30),
         ),
       ),
-      home: const Getstarted(),
+      home: box.get("userProfile") == null ? const Getstarted() : const Home(),
     );
   }
 }

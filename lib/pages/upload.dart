@@ -6,6 +6,7 @@ import 'package:ftpconnect/ftpConnect.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share/constant/constants.dart';
 import 'package:share/logic/firebase_db.dart';
+import 'package:share/logic/hive_db.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class Upload extends StatefulWidget {
@@ -26,24 +27,6 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
   late double screenWidth;
   double? wiggly;
   static const frequency = 1800;
-  Map userDetails = {
-    "given_name": "Shaan",
-    "locale": "en",
-    "family_name": "Faydh",
-    "picture":
-        "https://lh3.googleusercontent.com/a/AGNmyxabmd2wOA-sjH_tOVSZcduJx9b_gSWXfpKjmKLi=s96-c",
-    "aud":
-        "825136703376-i0oghv9t12p6klkv5j5ke9aao3ppo11o.apps.googleusercontent.com",
-    "azp":
-        "825136703376-b2t3tmlhv06j76rps5qd9q6a2br889vn.apps.googleusercontent.com",
-    "exp": "1679373689",
-    "iat": "1679370089",
-    "iss": "https://accounts.google.com",
-    "sub": "107178732979814569623",
-    "name": "Shaan Faydh",
-    "email": "chicken1010faydh@gmail.com",
-    "email_verified": "true"
-  };
 
   @override
   void initState() {
@@ -178,8 +161,8 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
                         //upload details of uploader
                         await FirebaseStuffs().uploadFile(
                           filename: result.files.first.name,
-                          uploader: userDetails["name"],
-                          uploaderImage: userDetails["picture"],
+                          uploader: box.get("userProfile")["name"],
+                          uploaderImage: box.get("userProfile")["picture"],
                           docReference: uFileName,
                           time: DateTime.now().millisecondsSinceEpoch,
                           fileSize:

@@ -1,5 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:share/pages/Profilebox.dart';
+import 'package:share/logic/hive_db.dart';
 import 'package:share/pages/home.dart';
 import 'package:share/pages/Otp.dart';
 import 'package:lottie/lottie.dart';
@@ -53,8 +53,6 @@ class _LoginState extends State<Login> {
   //   return null;
   // }
   Future<UserCredential?> signInWithGoogle() async {
-    await ProfileBox.init();
-
     FirebaseAuth auth = FirebaseAuth.instance;
     showDialog(
         context: context,
@@ -79,8 +77,7 @@ class _LoginState extends State<Login> {
     print(userCredential.additionalUserInfo!.profile);
 
     // Store the map data in Hive
-    ProfileBox.box
-        .put('userProfile', userCredential.additionalUserInfo!.profile);
+    box.put('userProfile', userCredential.additionalUserInfo!.profile);
 
     return null;
   }
@@ -126,16 +123,13 @@ class _LoginState extends State<Login> {
                   fontSize: 30, fontWeight: FontWeight.w600, height: 1.5),
             ),
           ),
-          
           Center(
             child: Container(
-             
               width: widgetWidth,
               // color: Colors.red[400],
               height: screenHeight / 2,
-              child: Lottie.asset(
-                  'assets/files/login.json',
-                  fit: BoxFit.contain),
+              child:
+                  Lottie.asset('assets/files/login.json', fit: BoxFit.contain),
             ),
           ),
           Center(

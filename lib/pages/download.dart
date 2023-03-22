@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:share/constant/constants.dart';
 import 'package:share/logic/firebase_db.dart';
+import 'package:share/logic/hive_db.dart';
 import 'package:share/widgets/file_clip.dart';
 
 class FileDownload extends StatefulWidget {
@@ -21,26 +22,6 @@ class FileDownload extends StatefulWidget {
 }
 
 class _FileDownloadState extends State<FileDownload> {
-//TODO replace with downloaders data
-
-  Map userDetails = {
-    "given_name": "Shaan",
-    "locale": "en",
-    "family_name": "Faydh",
-    "picture":
-        "https://lh3.googleusercontent.com/a/AGNmyxabmd2wOA-sjH_tOVSZcduJx9b_gSWXfpKjmKLi=s96-c",
-    "aud":
-        "825136703376-i0oghv9t12p6klkv5j5ke9aao3ppo11o.apps.googleusercontent.com",
-    "azp":
-        "825136703376-b2t3tmlhv06j76rps5qd9q6a2br889vn.apps.googleusercontent.com",
-    "exp": "1679373689",
-    "iat": "1679370089",
-    "iss": "https://accounts.google.com",
-    "sub": "107178732979814569623",
-    "name": "Shaan Faydh",
-    "email": "chicken1010faydh@gmail.com",
-    "email_verified": "true"
-  };
   bool isDownloading = false;
   String progress = "-1";
 
@@ -98,8 +79,8 @@ class _FileDownloadState extends State<FileDownload> {
 
             List history = widget.fileDetails['history'];
             history.insert(0, {
-              "name": userDetails["name"],
-              "image": userDetails["picture"],
+              "name": box.get("userProfile")["name"],
+              "image": box.get("userProfile")["picture"],
               "date": formattedDate
             });
 
