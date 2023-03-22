@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:ftpconnect/ftpConnect.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share/constant/constants.dart';
@@ -20,9 +21,11 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
   bool hasUploaded = false;
   String progress = "-1";
   String footer = "Click above to upload";
-  bool resize = true;
   bool isDispose = false;
-  bool first = true;
+  late double screenHeight;
+  late double screenWidth;
+  double? wiggly;
+  static const frequency = 1800;
   Map userDetails = {
     "given_name": "Shaan",
     "locale": "en",
@@ -45,7 +48,9 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    repeatResize();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      repeatResize();
+    });
   }
 
   @override
@@ -58,21 +63,22 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
     while (true) {
       if (!isDispose) {
         setState(() {
-          resize = resize ? false : true;
+          wiggly = wiggly == screenWidth / 1.5
+              ? screenWidth / 1.8
+              : screenWidth / 1.5;
         });
-      }
-      if (first) {
-        first = false;
+        await Future.delayed(const Duration(milliseconds: frequency));
       } else {
-        await Future.delayed(const Duration(milliseconds: 1600));
+        break;
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
+    wiggly ??= screenWidth / 1.8;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -125,19 +131,10 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
                 ),
               ),
               AnimatedContainer(
-                curve: Curves.ease,
-                duration: const Duration(milliseconds: 1600),
-                // color: Colors.black,
-                width: isUploading
-                    ? screenWidth / 1.5
-                    : !resize
-                        ? screenWidth / 1.8
-                        : screenWidth / 1.5,
-                height: isUploading
-                    ? screenWidth / 1.5
-                    : !resize
-                        ? screenWidth / 1.8
-                        : screenWidth / 1.5,
+                curve: Curves.easeInOut,
+                duration: const Duration(milliseconds: frequency),
+                width: isUploading ? screenWidth / 1.5 : wiggly,
+                height: isUploading ? screenWidth / 1.5 : wiggly,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isUploading ? Colors.white : Colors.black,
