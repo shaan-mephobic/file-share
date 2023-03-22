@@ -15,7 +15,8 @@ class _HomeState extends State<Home> {
   FTPConnect ftp =
       FTPConnect('192.168.0.154', user: 'admin', pass: 'password', port: 2121);
   bool isLoading = true;
-
+  GlobalKey<RefreshIndicatorState> refreshKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   void initState() {
     super.initState();
@@ -48,7 +49,7 @@ class _HomeState extends State<Home> {
                 fontWeight: FontWeight.w600)),
         backgroundColor: Colors.white,
         elevation: 8.0,
-        onPressed: () async {
+        onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (_) => Upload(ftp: ftp)));
         },
@@ -66,6 +67,7 @@ class _HomeState extends State<Home> {
       ),
       body: !isLoading
           ? RefreshIndicator(
+              key: refreshKey,
               color: Colors.white,
               backgroundColor: Colors.red[400],
               onRefresh: () async {
@@ -75,15 +77,19 @@ class _HomeState extends State<Home> {
                 stream: FirebaseFirestore.instance
                     .collection("files")
                     // .limit(12)
-                    // .orderBy("Published Date", descending: true)
+
+                    .orderBy("time", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   //filter snapshots
                   snapshot = snapshot;
 
-                  if (!snapshot.hasData) {
-                    return const Text("NO data");
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                        child: Text("No data",
+                            style: TextStyle(
+                                fontSize: 23, fontWeight: FontWeight.w600)));
                   }
                   return GridView.builder(
                     physics: const BouncingScrollPhysics(),
@@ -124,8 +130,7 @@ class _HomeState extends State<Home> {
                               context,
                               MaterialPageRoute(
                                   builder: (_) => FileDownload(
-                                        fileDetails:
-                                            snapshot.data!.docs[index],
+                                        fileDetails: snapshot.data!.docs[index],
                                       )));
                         },
                         child: Padding(

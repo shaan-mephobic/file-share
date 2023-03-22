@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -180,10 +179,14 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
 
                         //upload details of uploader
                         await FirebaseStuffs().uploadFile(
-                            filename: result.files.first.name,
-                            uploader: userDetails["name"],
-                            uploaderImage: userDetails["picture"],
-                            docReference: uFileName);
+                          filename: result.files.first.name,
+                          uploader: userDetails["name"],
+                          uploaderImage: userDetails["picture"],
+                          docReference: uFileName,
+                          time: DateTime.now().millisecondsSinceEpoch,
+                          fileSize:
+                              "${(result.files.first.size / (1024 * 1024)).round()}MB",
+                        );
 
                         File file = File(result.paths.first!);
                         await ftp.uploadFile(sRemoteName: uFileName, file,
@@ -197,11 +200,13 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
                               footer = "Uploaded";
                             });
                             await Future.delayed(const Duration(seconds: 5));
-                            setState(() {
-                              hasUploaded = false;
-                              footer = "Click above to upload";
-                              progress = "-1";
-                            });
+                            if (!isDispose) {
+                              setState(() {
+                                hasUploaded = false;
+                                footer = "Click above to upload";
+                                progress = "-1";
+                              });
+                            }
                           }
                           // print(footer);
                         });

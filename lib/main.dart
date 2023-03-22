@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:share/pages/home.dart';
 import "pages/start.dart";
 import 'package:firebase_core/firebase_core.dart';
 
@@ -18,7 +17,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Share',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: "SpaceGroteskt"),
+      // theme: ThemeData(fontFamily: "SpaceGroteskt"),
+      theme: ThemeData(
+        fontFamily: "SpaceGroteskt",
+        primaryColor: Colors.white,
+        brightness: Brightness.light,
+        dividerColor: Colors.white54,
+        primarySwatch: Colors.red,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red),
+        scaffoldBackgroundColor: Colors.white,
+        scrollbarTheme: ScrollbarThemeData(
+          interactive: true,
+          thumbVisibility: const MaterialStatePropertyAll(false),
+          radius: const Radius.circular(50),
+          thickness: MaterialStateProperty.all(4),
+          crossAxisMargin: 2,
+          thumbColor: MaterialStateProperty.all(Colors.white30),
+        ),
+      ),
       home: const Getstarted(),
     );
   }
