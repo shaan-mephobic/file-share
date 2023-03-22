@@ -149,12 +149,10 @@ class _LoginState extends State<Login> {
                     onPressed: () async {
                       await signInWithGoogle();
                       if (mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Home(),
-                          ),
-                        );
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => const Home()),
+                            (Route<dynamic> route) => false);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -225,7 +223,7 @@ class _LoginState extends State<Login> {
     //       return Center(child: CircularProgressIndicator());
     //     });
     auth.verifyPhoneNumber(
-      phoneNumber: "+91" + phone,
+      phoneNumber: "+91$phone",
       verificationCompleted: (PhoneAuthCredential credential) async {
         await auth.signInWithCredential(credential).then((value) {
           print("You are logged in successfully");
@@ -253,7 +251,7 @@ class _LoginState extends State<Login> {
   void showToast(String message) {
     Flushbar(
       message: message,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
       messageColor: Colors.white,
     ).show(context);
   }

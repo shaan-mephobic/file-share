@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
+import 'package:share/constant/constants.dart';
 import 'package:share/logic/firebase_db.dart';
 
 class FileDownload extends StatefulWidget {
@@ -102,7 +103,7 @@ class _FileDownloadState extends State<FileDownload> {
             await FirebaseStuffs()
                 .updateHistory(widget.fileDetails["docReference"], history);
 
-            FTPConnect ftp = FTPConnect('192.168.0.154',
+            FTPConnect ftp = FTPConnect(Constants.ipAddress,
                 user: 'admin', pass: 'password', port: 2121);
             await ftp.connect();
             await ftp.createFolderIfNotExist("Everything");

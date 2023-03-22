@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share/constant/constants.dart';
 import 'package:share/logic/firebase_db.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
@@ -167,7 +168,7 @@ class _UploadState extends State<Upload> with TickerProviderStateMixin {
                         }
                       });
                       //connect
-                      FTPConnect ftp = FTPConnect('192.168.0.154',
+                      FTPConnect ftp = FTPConnect(Constants.ipAddress,
                           user: 'admin', pass: 'password', port: 2121);
                       await ftp.connect();
                       await ftp.createFolderIfNotExist("Everything");

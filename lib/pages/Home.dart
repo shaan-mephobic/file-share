@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
+import 'package:share/constant/constants.dart';
 import 'package:share/pages/download.dart';
 import 'package:share/pages/upload.dart';
 
@@ -12,11 +13,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  FTPConnect ftp =
-      FTPConnect('192.168.0.154', user: 'admin', pass: 'password', port: 2121);
+  FTPConnect ftp = FTPConnect(Constants.ipAddress,
+      user: 'admin', pass: 'password', port: 2121);
   bool isLoading = true;
-  GlobalKey<RefreshIndicatorState> refreshKey =
+  final GlobalKey<RefreshIndicatorState> refreshKey =
       GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,30 @@ class _HomeState extends State<Home> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      key: scaffoldKey,
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Text(
+                'ver 1.0',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              title: const Text('Log Out'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         splashColor: Colors.transparent,
@@ -55,6 +81,10 @@ class _HomeState extends State<Home> {
         },
       ),
       appBar: AppBar(
+        // leading: IconButton(
+        //   icon: const Icon(Icons.),
+        //   onPressed: () => scaffoldKey.currentState?.openDrawer(),
+        // ),
         foregroundColor: Colors.black,
         toolbarHeight: screenHeight / 7,
         backgroundColor: Colors.transparent,
