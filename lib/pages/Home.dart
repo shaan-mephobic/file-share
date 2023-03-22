@@ -1,12 +1,18 @@
 import 'dart:ui';
-
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:hive_ui/hive_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpConnect.dart';
+import 'package:hive/hive.dart';
 import 'package:share/constant/constants.dart';
 import 'package:share/pages/download.dart';
+import 'package:share/pages/start.dart';
 import 'package:share/pages/upload.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,10 +28,19 @@ class _HomeState extends State<Home> {
   final GlobalKey<RefreshIndicatorState> refreshKey =
       GlobalKey<RefreshIndicatorState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   @override
   void initState() {
     super.initState();
     initializeFTP();
+  }
+
+  Future<void> signOutGoogle() async {
+    await googleSignIn.signOut();
+    await firebaseAuth.signOut();
+    await Hive.deleteBoxFromDisk('profileBox');
+    print("User signed out of Google account and removed data from Hive");
   }
 
   Future<void> initializeFTP() async {
@@ -60,7 +75,11 @@ class _HomeState extends State<Home> {
             ListTile(
               title: const Text('Log Out'),
               onTap: () {
-                Navigator.pop(context);
+                signOutGoogle().then((value) => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Getstarted(),
+                    )));
               },
             ),
           ],

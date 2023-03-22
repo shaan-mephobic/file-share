@@ -1,9 +1,15 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:share/pages/Profilebox.dart';
 import 'package:share/pages/home.dart';
 import 'package:share/pages/Otp.dart';
+import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:hive_ui/hive_ui.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -16,8 +22,39 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   late String _verificationId;
+  // Future<UserCredential?> signInWithGoogle() async {
+  //   // Create an instance of the firebase auth and google signin
+  //   FirebaseAuth auth = FirebaseAuth.instance;
+  //   showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return Center(child: CircularProgressIndicator());
+  //       });
+  //   final GoogleSignIn googleSignIn = GoogleSignIn();
+  //   //Triger the authentication flow
+  //   final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+  //   //Obtain the auth details from the request
+  //   final GoogleSignInAuthentication googleAuth =
+  //       await googleUser!.authentication;
+  //   //Create a new credentials
+  //   final AuthCredential credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth.accessToken,
+  //     idToken: googleAuth.idToken,
+  //   );
+  //   //Sign in the user with the credentials
+  //   final UserCredential userCredential =
+  //       await auth.signInWithCredential(credential);
+  //   print("details");
+  //   print(userCredential.additionalUserInfo!.profile);
+
+  //   print("aabove");
+  //   Navigator.of(context).pop();
+  //   return null;
+  // }
   Future<UserCredential?> signInWithGoogle() async {
-    // Create an instance of the firebase auth and google signin
+    await ProfileBox.init();
+
     FirebaseAuth auth = FirebaseAuth.instance;
     showDialog(
         context: context,
@@ -25,25 +62,26 @@ class _LoginState extends State<Login> {
           return Center(child: CircularProgressIndicator());
         });
     final GoogleSignIn googleSignIn = GoogleSignIn();
-    //Triger the authentication flow
+
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-    //Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
         await googleUser!.authentication;
-    //Create a new credentials
+
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    //Sign in the user with the credentials
+
     final UserCredential userCredential =
         await auth.signInWithCredential(credential);
     print("details");
     print(userCredential.additionalUserInfo!.profile);
 
-    print("aabove");
-    Navigator.of(context).pop();
+    // Store the map data in Hive
+    ProfileBox.box
+        .put('userProfile', userCredential.additionalUserInfo!.profile);
+
     return null;
   }
 
@@ -88,60 +126,18 @@ class _LoginState extends State<Login> {
                   fontSize: 30, fontWeight: FontWeight.w600, height: 1.5),
             ),
           ),
-          const SizedBox(),
-          Stack(
-            children: [
-              Center(
-                child: SizedBox(
-                  width: widgetWidth,
-                  child: TextField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black, // set border color here
-                        ),
-                      ),
-                      hintText: 'Enter Your Phone Number',
-                      labelText: 'Phone Number',
-                      labelStyle: TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 13),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          
           Center(
-              child: SizedBox(
-                  width: widgetWidth2,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      loginWithPhone();
-                    },
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 15)),
-                    //() {
-
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context) => Otp()),
-                    //   );
-                    // },
-                    child: const Text(
-                      "Done",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                  ))),
+            child: Container(
+             
+              width: widgetWidth,
+              // color: Colors.red[400],
+              height: screenHeight / 2,
+              child: Lottie.asset(
+                  'assets/files/login.json',
+                  fit: BoxFit.contain),
+            ),
+          ),
           Center(
               child: SizedBox(
                   width: widgetWidth,
