@@ -48,6 +48,10 @@ dependencies:
   permission_handler:
   intl: 
   flutter_svg: ^2.0.4
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.3
+  hive_ui: ^1.0.14
 
  
  
