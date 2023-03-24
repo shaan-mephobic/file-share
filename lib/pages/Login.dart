@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
     print(userCredential.additionalUserInfo!.profile);
 
     // Store the map data in Hive
-    box.put('userProfile', userCredential.additionalUserInfo!.profile);
+    // box.put('userProfile', userCredential.additionalUserInfo!.profile);
 
     return null;
   }

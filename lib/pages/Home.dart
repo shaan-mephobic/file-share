@@ -39,7 +39,8 @@ class _HomeState extends State<Home> {
   Future<void> signOutGoogle() async {
     await googleSignIn.signOut();
     await firebaseAuth.signOut();
-    await Hive.deleteBoxFromDisk('profileBox');
+    // googleSignIn.currentUser.
+    // await Hive.deleteBoxFromDisk('profileBox');
     print("User signed out of Google account and removed data from Hive");
   }
 
